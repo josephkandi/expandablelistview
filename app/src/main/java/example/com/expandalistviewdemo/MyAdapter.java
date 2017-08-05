@@ -1,12 +1,15 @@
 package example.com.expandalistviewdemo;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.HashMap;
 
 /**
  * Created by joseph on 2017/08/05.
@@ -15,6 +18,8 @@ import android.widget.TextView;
 public class  MyAdapter extends BaseExpandableListAdapter {
 
     private  String title;
+
+    private  HashMap<String, String> holder = new HashMap<>();
 
     public MyAdapter(String title){
         this.title = title;
@@ -56,9 +61,9 @@ public class  MyAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        if (convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_header, parent, false);
-        }
+
+        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_header, parent, false);
+
 
         TextView titleTextView = (TextView) convertView.findViewById(R.id.tv_title);
         titleTextView.setText(title + " " + (groupPosition + 1));
@@ -67,13 +72,32 @@ public class  MyAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        if (convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_child, parent, false);
-        }
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_child, parent, false);
 
-        EditText etFirstName = (EditText) convertView.findViewById(R.id.et_first_name);
-        Button btnSave = (Button) convertView.findViewById(R.id.btn_save);
+        final EditText etFirstName = (EditText) convertView.findViewById(R.id.et_first_name);
+        final String value =  holder.get(String.valueOf(groupPosition + childPosition));
+
+        etFirstName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                holder.put(String.valueOf(groupPosition + childPosition), s.toString());
+            }
+        });
+
+        if (value != null){
+            etFirstName.setText(value);
+        }
 
         return convertView;
     }
